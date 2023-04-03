@@ -24,7 +24,7 @@ spark.sql("""
     SELECT 
         tab1.time_ran,
         tab1.total_users,
-        tab1.total_users - COALESCE(t2.total_users, 0) AS users_added
+        tab1.total_users - COALESCE(tab2.total_users, 0) AS users_added
     FROM (
         SELECT CURRENT_TIMESTAMP() AS time_ran, COUNT(*) AS total_users
         FROM usr
