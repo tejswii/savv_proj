@@ -44,12 +44,12 @@ spark.sql("""
     INSERT OVERWRITE TABLE user_report
     SELECT
         usr.id AS user_id,
-        COALESCE(SUM(CASE WHEN activitylog.type = 'UPDATE' THEN 1 ELSE 0 END)) AS total_updates,
-        COALESCE(SUM(CASE WHEN activitylog.type = 'INSERT' THEN 1 ELSE 0 END)) AS total_inserts,
-        COALESCE(SUM(CASE WHEN activitylog.type = 'DELETE' THEN 1 ELSE 0 END)) AS total_deletes,
+        SUM(CASE WHEN activitylog.type = 'UPDATE' THEN 1 ELSE 0 END) AS total_updates,
+        SUM(CASE WHEN activitylog.type = 'INSERT' THEN 1 ELSE 0 END) AS total_inserts,
+        SUM(CASE WHEN activitylog.type = 'DELETE' THEN 1 ELSE 0 END) AS total_deletes,
         MAX(activitylog.type) AS last_activity_type,
-        CASE WHEN CAST(from_unixtime(MAX(activitylog.timestamp)) AS DATE)  >= DATE_SUB(CURRENT_TIMESTAMP(), 2) THEN true ELSE false END AS is_active,
-        COALESCE(COUNT(user_dump.user_id)) AS upload_count
+        CASE WHEN CAST(from_unixtime(MAX(activitylog.timestamp)) AS DATE) >= DATE_SUB(CURRENT_TIMESTAMP(), 2) THEN true ELSE false END AS is_active,
+        COUNT(user_dump.user_id) AS upload_count
     FROM usr
     LEFT JOIN activitylog ON usr.id = activitylog.user_id
     LEFT JOIN user_dump ON usr.id = user_dump.user_id
